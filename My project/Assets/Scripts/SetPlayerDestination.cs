@@ -3,17 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class PlayerController : MonoBehaviour
+public class SetPlayerDestination : MonoBehaviour
 {
-
-    public GameObject player;
-    NavMeshAgent agent;
-    RaycastHit hitinfo;
+    public NavMeshAgent agent;
     public Transform marker;
+
     // Start is called before the first frame update
     void Start()
     {
-        agent = player.GetComponent<NavMeshAgent>();
+        
     }
 
     // Update is called once per frame
@@ -22,18 +20,16 @@ public class PlayerController : MonoBehaviour
         
     }
 
-    Vector3 playerTransform = new Vector3();
+    RaycastHit hit;
 
     private void OnMouseDown()
     {
-        Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hitinfo);
+        if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit)){
+            marker.position = hit.point;
+            agent.SetDestination(hit.point);
+        }
         //Vector3 screenPoint = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0);
         //screenPoint.z = 10.0f; //distance of the plane from the camera
-        
-        playerTransform = hitinfo.point;
-        marker.position = playerTransform;
-        agent.SetDestination(playerTransform);
-
         
     }
 
