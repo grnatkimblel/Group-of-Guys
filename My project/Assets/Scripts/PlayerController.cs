@@ -6,13 +6,14 @@ using UnityEngine.AI;
 public class PlayerController : MonoBehaviour
 {
 
-    public NavMeshAgent agent;
+    public GameObject player;
+    NavMeshAgent agent;
     RaycastHit hitinfo;
     public Transform marker;
     // Start is called before the first frame update
     void Start()
     {
-        
+        agent = player.GetComponent<NavMeshAgent>();
     }
 
     // Update is called once per frame
@@ -28,14 +29,12 @@ public class PlayerController : MonoBehaviour
         Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hitinfo);
         //Vector3 screenPoint = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0);
         //screenPoint.z = 10.0f; //distance of the plane from the camera
+        
         playerTransform = hitinfo.point;
         marker.position = playerTransform;
         agent.SetDestination(playerTransform);
-    }
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.DrawSphere(playerTransform, 1);
+        
     }
 
 }
