@@ -17,10 +17,11 @@ public class AutoAttacker : MonoBehaviour
     {
         character = GetComponent<Character>();
         playerAgent = GetComponent<NavMeshAgent>();
+        Debug.Log(hitWalkable);
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         handleMouseInputs();
         if(hasMovingTarget)
@@ -28,11 +29,7 @@ public class AutoAttacker : MonoBehaviour
             playerAgent.SetDestination(hitOpponent.transform.position); //need this every frame for if the target moves
             if(playerAgent.stoppingDistance == 0f) 
                 playerAgent.stoppingDistance = character.autoAttackRange;
-        } else
-        {
-            playerAgent.SetDestination(hitWalkable.point);
-            playerAgent.stoppingDistance = 0f;
-        }
+        } 
     }
 
 
@@ -56,7 +53,7 @@ public class AutoAttacker : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(1) || Input.GetMouseButton(1)) //if user has right click down
         {
-
+            Debug.Log("user has right clicked");
             if (isMouseOverOpponentGameObject()) //if user Right clicks on an opponent
             {
                 hasMovingTarget = true;
@@ -66,6 +63,8 @@ public class AutoAttacker : MonoBehaviour
                 if (isMouseOverWalkableSurface())
                 {
                     hasMovingTarget = false;
+                    playerAgent.SetDestination(hitWalkable.point);
+                    playerAgent.stoppingDistance = 0f;
                 }
             }
             
