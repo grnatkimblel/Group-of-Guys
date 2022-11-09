@@ -7,6 +7,12 @@ using UnityEngine.AI;
 public class Character : MonoBehaviour
 {
     public float autoAttackRange;
+    public float autoAttackStartUpTime;
+    public int autoAttackDamage;
+
+    public int health;
+
+    public float movementSpeed;
     // Start is called before the first frame update
     void Start()
     {
@@ -14,8 +20,21 @@ public class Character : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        
+        if(health <= 0)
+        {
+            die();
+        }
+    }
+
+    public void dealDamage(int damage)
+    {
+        this.health -= damage;
+    }
+
+    void die()
+    {
+        Destroy(gameObject);
     }
 }

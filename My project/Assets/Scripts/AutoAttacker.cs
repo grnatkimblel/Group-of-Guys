@@ -10,25 +10,40 @@ public class AutoAttacker : MonoBehaviour
     Character character;
 
     public float maxDistance = 1000; // set to players auto attack range
-    bool hasMovingTarget = false;
+    bool targetingAttackableEntity = false;
 
     // Start is called before the first frame update
     void Start()
     {
         character = GetComponent<Character>();
         playerAgent = GetComponent<NavMeshAgent>();
+        playerAgent.speed = character.movementSpeed;
         Debug.Log(hitWalkable);
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        
+        Gizmos.DrawWireSphere(transform.position , playerAgent.remainingDistance);
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
         handleMouseInputs();
-        if(hasMovingTarget)
+        if(targetingAttackableEntity)
         {
             playerAgent.SetDestination(hitOpponent.transform.position); //need this every frame for if the target moves
-            if(playerAgent.stoppingDistance == 0f) 
-                playerAgent.stoppingDistance = character.autoAttackRange;
+           
+            if (playerAgent.remainingDistance < character.autoAttackRange)
+            {
+                Debug.Log("AutoAttacking");
+                playerAgent.SetDestination(playerAgent.transform.position);
+                StartCoroutine(AutoAttack());
+                
+            }
+            else playerAgent.SetDestination(hitOpponent.transform.position);
+
         } 
     }
 
@@ -56,13 +71,13 @@ public class AutoAttacker : MonoBehaviour
             Debug.Log("user has right clicked");
             if (isMouseOverOpponentGameObject()) //if user Right clicks on an opponent
             {
-                hasMovingTarget = true;
+                targetingAttackableEntity = true;
             }
             else
             {
                 if (isMouseOverWalkableSurface())
                 {
-                    hasMovingTarget = false;
+                    targetingAttackableEntity = false;
                     playerAgent.SetDestination(hitWalkable.point);
                     playerAgent.stoppingDistance = 0f;
                 }
@@ -73,6 +88,24 @@ public class AutoAttacker : MonoBehaviour
         {
 
         }
+    }
+
+    float determineStoppingDistance() //determines how far from the opponent the user should stop to successfully autoattack.
+    {
+  
+
+        GameObject opponent = hitOpponent.transform.gameObject;
+        float opponentMovementSpeed = opponent.GetComponent<Character>().movementSpeed;
+        return character.autoAttackRange - character.autoAttackStartUpTime * opponentMovementSpeed;
+    }
+
+   
+
+    IEnumerator AutoAttack()
+    {
+        GameObject opponent = hitOpponent.transform.gameObject;
+        yield return new WaitForSeconds(character.autoAttackStartUpTime);
+        opponent.GetComponent<Character>().dealDamage(10);
     }
 
 }
